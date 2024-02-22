@@ -91,4 +91,16 @@ SELECT CUSTOMERNAME , rfm_recency , rfm_frequency , rfm_monetary, rfm_str,
 FROM #rfm
 ORDER BY rfm_recency , rfm_frequency , rfm_monetary
 
+--BONUS
+--How many products in each order that is shipped?
+WITH cte AS (
+	SELECT ORDERNUMBER, STRING_AGG(PRODUCTCODE,',') AS Products -- Concatenate the product code into a string
+	FROM sales_data
+	WHERE STATUS = 'Shipped' 
+	GROUP BY ORDERNUMBER
+)
+	SELECT ORDERNUMBER, Products, LEN(Products) - LEN(REPLACE(Products,',','')) + 1 AS Number_of_products  -- The number of products is the length of the string - the length of the string without a comma + 1
+	FROM cte
+	WHERE LEN(Products) - LEN(REPLACE(Products,',','')) + 1 >= 2 --Only include the order has more than 2 products
+	ORDER BY 3
 
