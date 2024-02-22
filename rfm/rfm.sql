@@ -92,13 +92,3 @@ FROM #rfm
 ORDER BY rfm_recency , rfm_frequency , rfm_monetary
 
 
---What products are most often sold together?
-WITH cte AS (
-	SELECT ORDERNUMBER AS OrderNumber, STRING_AGG(PRODUCTCODE,',') AS ProductCodes
-	FROM sales_data
-	GROUP BY ORDERNUMBER
-)
-	SELECT *, LEN(ProductCodes) - LEN(REPLACE(ProductCodes,',','')) + 1 AS NumberOfProducts 
-	FROM cte
-	WHERE CHARINDEX(',',ProductCodes) != 0 -- include only >= 2 products in 1 order
-	ORDER BY 3 DESC;
